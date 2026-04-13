@@ -1,40 +1,1428 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mon Super Site</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hugo Durand — Consultant Acquisition Digitale</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --bg2: #12121a;
+      --bg3: #1a1a26;
+      --accent: #00ff88;
+      --accent2: #00ccff;
+      --accent3: #ff3366;
+      --text: #e8e8f0;
+      --muted: #6b6b88;
+      --border: #2a2a3a;
+      --mono: 'Space Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --retro: 'VT323', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* SCANLINES overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.15) 2px,
+        rgba(0,0,0,0.15) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* NOISE texture */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.4;
+    }
+
+    /* GRID background */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 3rem;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-decoration: none;
+    }
+
+    .nav-logo span {
+      color: var(--muted);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 0.5rem 1.25rem;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      cursor: pointer;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .nav-cta:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    /* MAIN CONTENT */
+    main { position: relative; z-index: 1; }
+
+    section { padding: 6rem 3rem; max-width: 1200px; margin: 0 auto; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 8rem;
+      padding-bottom: 4rem;
+      max-width: 100%;
+      padding-left: 3rem;
+      padding-right: 3rem;
+    }
+
+    .hero-inner { max-width: 1200px; margin: 0 auto; width: 100%; }
+
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .hero-tag::before {
+      content: '>';
+      color: var(--accent3);
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .hero-title {
+      font-family: var(--retro);
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      line-height: 1;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-title .green { color: var(--accent); }
+    .hero-title .blue { color: var(--accent2); }
+
+    .hero-subtitle {
+      font-family: var(--retro);
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-desc {
+      font-family: var(--sans);
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 540px;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: 700;
+      transition: all 0.2s;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    }
+
+    .btn-primary:hover {
+      background: var(--accent2);
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0 var(--accent);
+    }
+
+    .btn-secondary {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 4rem;
+      padding-top: 3rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .stat-item {}
+
+    .stat-number {
+      font-family: var(--retro);
+      font-size: 2.5rem;
+      color: var(--accent);
+      line-height: 1;
+      display: block;
+    }
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    /* TERMINAL WINDOW */
+    .terminal {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      max-width: 540px;
+      margin-left: auto;
+    }
+
+    .terminal-bar {
+      background: var(--bg3);
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    .t-dot.r { background: var(--accent3); }
+    .t-dot.y { background: #ffcc00; }
+    .t-dot.g { background: var(--accent); }
+
+    .terminal-title {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-left: auto;
+      margin-right: auto;
+      letter-spacing: 0.05em;
+    }
+
+    .terminal-body {
+      padding: 1.5rem;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .t-prompt { color: var(--accent); }
+    .t-cmd { color: var(--text); }
+    .t-comment { color: var(--muted); }
+    .t-string { color: var(--accent2); }
+    .t-value { color: var(--accent3); }
+    .t-cursor {
+      display: inline-block;
+      width: 8px; height: 14px;
+      background: var(--accent);
+      vertical-align: middle;
+      animation: blink 0.8s step-end infinite;
+    }
+
+    /* SECTION HEADER */
+    .section-header {
+      margin-bottom: 3rem;
+    }
+
+    .section-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent3);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: var(--retro);
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--text);
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+    }
+
+    .section-title span { color: var(--accent); }
+
+    /* SERVICES */
+    #services { background: transparent; }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .service-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: default;
+    }
+
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+
+    .service-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .service-card:hover::before { transform: scaleX(1); }
+
+    .service-icon {
+      font-family: var(--retro);
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .service-number {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--border);
+      letter-spacing: 0.1em;
+    }
+
+    .service-title {
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.03em;
+    }
+
+    .service-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .service-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 0.25rem 0.6rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* PROCESS / ABOUT */
+    #about {
+      background: linear-gradient(180deg, transparent 0%, rgba(0,255,136,0.02) 50%, transparent 100%);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.9;
+      margin-bottom: 1.25rem;
+    }
+
+    .about-text p strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .process-list {
+      list-style: none;
+      counter-reset: step;
+    }
+
+    .process-list li {
+      counter-increment: step;
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+
+    .process-list li:last-child { border-bottom: none; }
+
+    .step-num {
+      font-family: var(--retro);
+      font-size: 2rem;
+      color: var(--accent);
+      min-width: 40px;
+      line-height: 1;
+    }
+
+    .step-content h4 {
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .step-content p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* RESULTS */
+    #results {
+      padding-top: 0;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 4rem;
+    }
+
+    .result-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 40px; height: 2px;
+      background: var(--accent);
+    }
+
+    .result-num {
+      font-family: var(--retro);
+      font-size: 3rem;
+      color: var(--accent);
+      display: block;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .result-num.blue { color: var(--accent2); }
+    .result-num.red { color: var(--accent3); }
+
+    .result-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      line-height: 1.4;
+    }
+
+    /* CASE STUDIES */
+    .cases-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .case-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      display: grid;
+      grid-template-columns: 1fr 2fr auto;
+      gap: 2rem;
+      align-items: center;
+      transition: all 0.2s;
+      cursor: default;
+    }
+
+    .case-item:hover {
+      border-color: var(--accent2);
+    }
+
+    .case-client {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+    }
+
+    .case-name {
+      font-family: var(--sans);
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .case-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .case-metric {
+      text-align: right;
+    }
+
+    .case-metric-value {
+      font-family: var(--retro);
+      font-size: 2rem;
+      color: var(--accent);
+      display: block;
+      line-height: 1;
+    }
+
+    .case-metric-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* TESTIMONIALS */
+    #testimonials {
+      background: transparent;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .testimonial-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 2rem;
+      position: relative;
+    }
+
+    .t-quote {
+      font-family: var(--retro);
+      font-size: 4rem;
+      color: var(--accent);
+      line-height: 0.5;
+      margin-bottom: 1.25rem;
+      opacity: 0.5;
+    }
+
+    .t-text {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    .t-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .t-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .t-name {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+
+    .t-role {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* CTA / CONTACT */
+    #contact {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      max-width: 100%;
+      padding: 6rem 3rem;
+    }
+
+    #contact .inner { max-width: 700px; margin: 0 auto; }
+
+    .contact-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .contact-title {
+      font-family: var(--retro);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      color: var(--text);
+      margin-bottom: 1.25rem;
+      line-height: 1.1;
+    }
+
+    .contact-title span { color: var(--accent2); }
+
+    .contact-desc {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      text-align: left;
+      max-width: 500px;
+      margin: 0 auto 2rem;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-field label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .form-field input,
+    .form-field textarea,
+    .form-field select {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      padding: 0.75rem 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+      width: 100%;
+    }
+
+    .form-field input:focus,
+    .form-field textarea:focus,
+    .form-field select:focus {
+      border-color: var(--accent);
+    }
+
+    .form-field input::placeholder,
+    .form-field textarea::placeholder {
+      color: var(--muted);
+      opacity: 0.6;
+    }
+
+    .form-field select option {
+      background: var(--bg3);
+    }
+
+    .btn-submit {
+      width: 100%;
+      font-family: var(--mono);
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 1rem;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.2s;
+      clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    }
+
+    .btn-submit:hover {
+      background: var(--accent2);
+      transform: translateY(-2px);
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+
+    .contact-link:hover { color: var(--accent); }
+
+    .contact-link::before {
+      content: attr(data-icon) ' ';
+      color: var(--accent);
+    }
+
+    /* FOOTER */
+    footer {
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--border);
+      letter-spacing: 0.05em;
+    }
+
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* DIVIDER */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0 auto 1.5rem;
+      max-width: 200px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider-icon {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    /* SCROLL ANIMATIONS */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* GLITCH EFFECT */
+    .glitch {
+      position: relative;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      font-family: var(--retro);
+      font-size: inherit;
+      color: inherit;
+    }
+
+    .glitch::before {
+      color: var(--accent2);
+      clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+      animation: glitch1 3s infinite;
+    }
+
+    .glitch::after {
+      color: var(--accent3);
+      clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+      animation: glitch2 3s infinite;
+    }
+
+    @keyframes glitch1 {
+      0%, 85%, 100% { transform: translate(0); opacity: 0; }
+      87% { transform: translate(-3px, 1px); opacity: 0.8; }
+      89% { transform: translate(3px, -1px); opacity: 0.8; }
+      91% { transform: translate(0); opacity: 0; }
+    }
+
+    @keyframes glitch2 {
+      0%, 88%, 100% { transform: translate(0); opacity: 0; }
+      90% { transform: translate(3px, 2px); opacity: 0.8; }
+      92% { transform: translate(-3px, -2px); opacity: 0.8; }
+      94% { transform: translate(0); opacity: 0; }
+    }
+
+    /* HERO LAYOUT */
+    .hero-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    /* TYPE ANIMATION */
+    .typewriter {
+      overflow: hidden;
+      border-right: 2px solid var(--accent);
+      white-space: nowrap;
+      animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+      max-width: fit-content;
+    }
+
+    @keyframes typing {
+      from { max-width: 0; }
+      to { max-width: 100%; }
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: var(--accent); }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      section { padding: 4rem 1.5rem; }
+      #hero { padding: 7rem 1.5rem 3rem; }
+      .hero-layout { grid-template-columns: 1fr; }
+      .terminal { display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .results-grid { grid-template-columns: repeat(2, 1fr); }
+      .case-item { grid-template-columns: 1fr; gap: 1rem; }
+      .case-metric { text-align: left; }
+      footer { flex-direction: column; text-align: center; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <nav>
-            <div class="logo">MonLogo</div>
-            <ul>
-                <li><a href="#">Accueil</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+<div class="grid-bg"></div>
 
-    <main>
-        <section class="hero">
-            <h1>Bienvenue sur mon site</h1>
-            <p>Ceci est un exemple de site simple créé avec HTML et CSS.</p>
-            <button class="btn-main">Découvrir</button>
-        </section>
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">HD<span>/</span>CONSULTING</a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#about">Approche</a></li>
+    <li><a href="#results">Résultats</a></li>
+    <li><a href="#testimonials">Clients</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Prendre RDV</a>
+</nav>
 
-        <section class="content">
-            <h2>À propos</h2>
-            <p>Le développement web est un univers passionnant. Avec quelques lignes de code, on peut créer des expériences uniques.</p>
-        </section>
-    </main>
+<main>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-inner">
+      <div class="hero-layout">
+        <div>
+          <div class="hero-tag">Consultant Disponible · Paris / Remote</div>
+          <h1 class="hero-title">
+            <span class="glitch" data-text="HUGO">HUGO</span><br>
+            <span class="green">DURAND</span>
+          </h1>
+          <p class="hero-subtitle">Acquisition Digitale_</p>
+          <p class="hero-desc">
+            J'aide les startups et PME à construire des moteurs d'acquisition rentables — SEO, SEA, Growth Marketing — avec une approche data-driven et des résultats mesurables.
+          </p>
+          <div class="hero-buttons">
+            <a href="#contact" class="btn-primary">Démarrer un projet</a>
+            <a href="#results" class="btn-secondary">Voir les résultats</a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">+47</span>
+              <span class="stat-label">Projets livrés</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">8ans</span>
+              <span class="stat-label">D'expérience</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">×3.2</span>
+              <span class="stat-label">ROI moyen client</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">€2M+</span>
+              <span class="stat-label">Budget géré</span>
+            </div>
+          </div>
+        </div>
 
-    <footer>
-        <p>&copy; 2026 - Créé avec passion</p>
-    </footer>
+        <div class="terminal fade-up">
+          <div class="terminal-bar">
+            <span class="t-dot r"></span>
+            <span class="t-dot y"></span>
+            <span class="t-dot g"></span>
+            <span class="terminal-title">hugo@consulting ~ %</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="t-prompt">$ </span><span class="t-cmd">whoami</span></div>
+            <div class="t-comment">→ Hugo Durand, Consultant</div>
+            <br>
+            <div><span class="t-prompt">$ </span><span class="t-cmd">cat expertise.json</span></div>
+            <div><span class="t-comment">{</span></div>
+            <div>&nbsp;&nbsp;<span class="t-string">"seo"</span><span class="t-comment">: </span><span class="t-value">"Technical + Editorial"</span>,</div>
+            <div>&nbsp;&nbsp;<span class="t-string">"sea"</span><span class="t-comment">: </span><span class="t-value">"Google Ads + Meta"</span>,</div>
+            <div>&nbsp;&nbsp;<span class="t-string">"analytics"</span><span class="t-comment">: </span><span class="t-value">"GA4, Looker, Mixpanel"</span>,</div>
+            <div>&nbsp;&nbsp;<span class="t-string">"cro"</span><span class="t-comment">: </span><span class="t-value">"A/B Testing, UX"</span></div>
+            <div><span class="t-comment">}</span></div>
+            <br>
+            <div><span class="t-prompt">$ </span><span class="t-cmd">status --availability</span></div>
+            <div style="color: var(--accent);">✓ Disponible Q2 2025</div>
+            <br>
+            <div><span class="t-prompt">$ </span><span class="t-cursor"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-header fade-up">
+      <div class="section-tag">// 01 — Services</div>
+      <h2 class="section-title">Ce que je <span>construis</span><br>pour vous</h2>
+    </div>
+    <div class="services-grid">
+      <div class="service-card fade-up">
+        <span class="service-number">01</span>
+        <span class="service-icon">◈ SEO</span>
+        <h3 class="service-title">Référencement Naturel</h3>
+        <p class="service-desc">Audit technique, stratégie de contenu, link building. Je construis une visibilité organique durable qui génère du trafic qualifié sur le long terme.</p>
+        <div class="service-tags">
+          <span class="tag">Audit SEO</span>
+          <span class="tag">Content Strategy</span>
+          <span class="tag">Core Web Vitals</span>
+        </div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-number">02</span>
+        <span class="service-icon">◈ SEA</span>
+        <h3 class="service-title">Publicité Digitale</h3>
+        <p class="service-desc">Création, optimisation et pilotage de campagnes Google Ads et Meta Ads. Maximisation du ROAS avec une gestion rigoureuse des budgets.</p>
+        <div class="service-tags">
+          <span class="tag">Google Ads</span>
+          <span class="tag">Meta Ads</span>
+          <span class="tag">Retargeting</span>
+        </div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-number">03</span>
+        <span class="service-icon">◈ CRO</span>
+        <h3 class="service-title">Optimisation Conversion</h3>
+        <p class="service-desc">A/B testing, analyse UX, optimisation des tunnels de conversion. Transformer le trafic existant en revenus supplémentaires sans augmenter les budgets.</p>
+        <div class="service-tags">
+          <span class="tag">A/B Testing</span>
+          <span class="tag">Heatmaps</span>
+          <span class="tag">Funnel Analyse</span>
+        </div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-number">04</span>
+        <span class="service-icon">◈ DATA</span>
+        <h3 class="service-title">Analytics & Reporting</h3>
+        <p class="service-desc">Mise en place de dashboards sur-mesure, tracking avancé GA4, attribution multi-touch. Décisions basées sur la donnée, pas sur des intuitions.</p>
+        <div class="service-tags">
+          <span class="tag">GA4</span>
+          <span class="tag">Looker Studio</span>
+          <span class="tag">Attribution</span>
+        </div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-number">05</span>
+        <span class="service-icon">◈ GROWTH</span>
+        <h3 class="service-title">Growth Marketing</h3>
+        <p class="service-desc">Stratégie d'acquisition globale, email marketing, automatisation, growth hacking. Approche systématique pour scaler votre croissance.</p>
+        <div class="service-tags">
+          <span class="tag">Email Marketing</span>
+          <span class="tag">Automation</span>
+          <span class="tag">Funnel Design</span>
+        </div>
+      </div>
+      <div class="service-card fade-up">
+        <span class="service-number">06</span>
+        <span class="service-icon">◈ AUDIT</span>
+        <h3 class="service-title">Audit & Conseil</h3>
+        <p class="service-desc">Audit complet de votre présence digitale, identification des leviers de croissance, feuille de route prioritisée et accompagnement à l'exécution.</p>
+        <div class="service-tags">
+          <span class="tag">Stratégie</span>
+          <span class="tag">Roadmap</span>
+          <span class="tag">Formation</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="about-grid">
+      <div class="about-text fade-up">
+        <div class="section-header">
+          <div class="section-tag">// 02 — Approche</div>
+          <h2 class="section-title">Data-driven,<br><span>results-first</span></h2>
+        </div>
+        <p>Après <strong>8 ans dans l'acquisition digitale</strong>, j'ai appris une chose : la plupart des budgets marketing sont gaspillés sur des actions non-mesurables.</p>
+        <p>Mon approche est simple — <strong>chaque euro investi doit être traçable</strong>. Je travaille avec des objectifs clairs, des KPIs définis en amont et des reportings transparents toutes les semaines.</p>
+        <p>Je ne suis pas une agence. Vous travaillez <strong>directement avec moi</strong>, avec une vraie réactivité et une vision stratégique qui s'adapte aux évolutions du marché.</p>
+      </div>
+      <div class="fade-up">
+        <ol class="process-list">
+          <li>
+            <span class="step-num">01</span>
+            <div class="step-content">
+              <h4>Diagnostic</h4>
+              <p>Audit complet de l'existant — SEO, tracking, campagnes, tunnels. Identification des quick wins et des frictions.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">02</span>
+            <div class="step-content">
+              <h4>Stratégie</h4>
+              <p>Construction d'une roadmap priorisée avec des objectifs chiffrés et un plan d'action sur 90 jours.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">03</span>
+            <div class="step-content">
+              <h4>Exécution</h4>
+              <p>Implémentation rigoureuse avec itérations rapides basées sur la donnée en temps réel.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num">04</span>
+            <div class="step-content">
+              <h4>Scaling</h4>
+              <p>Amplification des canaux qui performent, abandon de ce qui ne fonctionne pas. Croissance durable.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <div class="section-header fade-up">
+      <div class="section-tag">// 03 — Résultats</div>
+      <h2 class="section-title">Des chiffres qui <span>parlent</span></h2>
+    </div>
+    <div class="results-grid fade-up">
+      <div class="result-card">
+        <span class="result-num">+312%</span>
+        <span class="result-label">Trafic organique moyen</span>
+      </div>
+      <div class="result-card">
+        <span class="result-num blue">×4.1</span>
+        <span class="result-label">ROAS moyen Google Ads</span>
+      </div>
+      <div class="result-card">
+        <span class="result-num">-38%</span>
+        <span class="result-label">Coût d'acquisition</span>
+      </div>
+      <div class="result-card">
+        <span class="result-num red">+89%</span>
+        <span class="result-label">Taux de conversion moyen</span>
+      </div>
+    </div>
+
+    <div class="section-header fade-up" style="margin-top: 3rem;">
+      <div class="section-tag">// Études de cas</div>
+    </div>
+    <div class="cases-list">
+      <div class="case-item fade-up">
+        <div>
+          <div class="case-client">E-commerce · Mode</div>
+          <div class="case-name">Refonte stratégie SEO + SEA</div>
+        </div>
+        <div class="case-desc">Audit complet, refonte de l'architecture technique, création de contenus piliers et relance des campagnes Shopping avec nouvelle structure de compte.</div>
+        <div class="case-metric">
+          <span class="case-metric-value">+267%</span>
+          <span class="case-metric-label">CA organique en 6 mois</span>
+        </div>
+      </div>
+      <div class="case-item fade-up">
+        <div>
+          <div class="case-client">SaaS B2B · RH</div>
+          <div class="case-name">Acquisition leads qualifiés</div>
+        </div>
+        <div class="case-desc">Stratégie content marketing + LinkedIn Ads + optimisation du funnel de démonstration. Réduction du CPL tout en augmentant la qualité des leads.</div>
+        <div class="case-metric">
+          <span class="case-metric-value">-52%</span>
+          <span class="case-metric-label">Coût par lead</span>
+        </div>
+      </div>
+      <div class="case-item fade-up">
+        <div>
+          <div class="case-client">Startup · Fintech</div>
+          <div class="case-name">Lancement & Growth Marketing</div>
+        </div>
+        <div class="case-desc">Stratégie de lancement multi-canal, tests d'acquisition rapides, optimisation des messages et des landing pages. Atteinte du PMF en 4 mois.</div>
+        <div class="case-metric">
+          <span class="case-metric-value">×3.8</span>
+          <span class="case-metric-label">ROAS dès le 3e mois</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="section-header fade-up">
+      <div class="section-tag">// 04 — Clients</div>
+      <h2 class="section-title">Ils me font <span>confiance</span></h2>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card fade-up">
+        <div class="t-quote">"</div>
+        <p class="t-text">Hugo a complètement transformé notre approche SEO. En 6 mois, notre trafic organique a triplé et on génère maintenant des leads qualifiés sans dépenser un euro de plus en pub.</p>
+        <div class="t-author">
+          <div class="t-avatar">ML</div>
+          <div>
+            <div class="t-name">Marie Lefebvre</div>
+            <div class="t-role">CMO · Startup SaaS</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card fade-up">
+        <div class="t-quote">"</div>
+        <p class="t-text">Ce que j'apprécie avec Hugo, c'est la transparence totale. Chaque semaine on a un point sur les KPIs, les tests en cours et les actions prévues. Aucune surprise.</p>
+        <div class="t-author">
+          <div class="t-avatar">TC</div>
+          <div>
+            <div class="t-name">Thomas Chevrier</div>
+            <div class="t-role">Founder · E-commerce</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card fade-up">
+        <div class="t-quote">"</div>
+        <p class="t-text">On avait un gros budget Google Ads avec un ROAS catastrophique. En 3 mois, Hugo a restructuré nos campagnes et on est passé de ×1.2 à ×4.5 de ROAS. Exceptionnel.</p>
+        <div class="t-author">
+          <div class="t-avatar">SB</div>
+          <div>
+            <div class="t-name">Sophie Bernard</div>
+            <div class="t-role">Directrice Marketing · PME</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="inner">
+      <div class="contact-tag fade-up">// 05 — Contact</div>
+      <h2 class="contact-title fade-up">Prêt à <span>scaler</span> votre<br>acquisition ?</h2>
+      <p class="contact-desc fade-up">Dites-moi ce que vous construisez. Je vous réponds sous 24h avec une première analyse gratuite.</p>
+
+      <form class="contact-form fade-up" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-field">
+            <label>Prénom</label>
+            <input type="text" placeholder="Marie">
+          </div>
+          <div class="form-field">
+            <label>Société</label>
+            <input type="text" placeholder="Acme Corp">
+          </div>
+        </div>
+        <div class="form-field">
+          <label>Email</label>
+          <input type="email" placeholder="marie@acme.com">
+        </div>
+        <div class="form-field">
+          <label>Besoin</label>
+          <select>
+            <option value="">Sélectionner un service</option>
+            <option>SEO / Référencement naturel</option>
+            <option>SEA / Publicité digitale</option>
+            <option>Growth Marketing</option>
+            <option>Analytics & Reporting</option>
+            <option>Audit complet</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Message</label>
+          <textarea rows="4" placeholder="Décrivez votre projet en quelques lignes..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit">Envoyer le message →</button>
+      </form>
+
+      <div class="contact-links fade-up">
+        <a href="mailto:hugo@hugo-consulting.fr" class="contact-link" data-icon="@">hugo@consulting.fr</a>
+        <a href="https://linkedin.com" class="contact-link" data-icon="in">LinkedIn</a>
+        <a href="https://calendly.com" class="contact-link" data-icon="◎">Calendly</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">© 2025 Hugo Durand — Consultant Acquisition Digitale</span>
+  <div class="footer-status">
+    <span class="status-dot"></span>
+    Disponible pour nouveaux projets
+  </div>
+  <span class="footer-copy">Paris · Remote · Worldwide</span>
+</footer>
+
+<script>
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Form
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.btn-submit');
+    btn.textContent = '✓ Message envoyé !';
+    btn.style.background = 'var(--accent2)';
+    setTimeout(() => {
+      btn.textContent = 'Envoyer le message →';
+      btn.style.background = '';
+    }, 3000);
+  }
+
+  // Stagger service cards
+  document.querySelectorAll('.service-card').forEach((card, i) => {
+    card.style.transitionDelay = `${i * 80}ms`;
+  });
+</script>
 </body>
 </html>
